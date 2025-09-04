@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Access and stream Terabox videos easily online. Paste your Terabox link to play or download." />
+<meta name="keywords" content="Terabox video player, Terabox downloader, online streaming" />
+<meta name="author" content="YourName or Brand" />
+<title>Terabox Video Player</title>
+
+<!-- Open Graph -->
+<meta property="og:title" content="Terabox Video Player - Stream & Download Terabox Videos" />
+<meta property="og:description" content="Access and stream Terabox videos easily online. Paste your Terabox link, watch and download instantly." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://yourdomain.com" />
+<meta property="og:image" content="https://yourdomain.com/static/terabox-thumbnail.jpg" />
+
+<!-- Structured Data JSON-LD -->
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "VideoObject",
+  "name": "Terabox Video Player",
+  "description": "Stream and download Terabox videos online easily and quickly.",
+  "thumbnailUrl": "https://yourdomain.com/static/terabox-thumbnail.jpg",
+  "uploadDate": "2025-09-03",
+  "contentUrl": "https://yourdomain.com",
+  "embedUrl": "https://yourdomain.com"
+}
+</script>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 1rem;
+    background: #f9f9f9;
+    color: #222;
+  }
+
+  header {
+    background-color: #0073e6;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+  }
+
+  main {
+    max-width: 700px;
+    margin: 0 auto;
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  }
+
+  label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  input[type="url"] {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+  }
+
+  button {
+    margin-top: 1rem;
+    background-color: #0073e6;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    font-size: 1.1rem;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #005bb5;
+  }
+
+  #videoPlayer {
+    margin-top: 2rem;
+    max-width: 100%;
+    border-radius: 8px;
+    background: black;
+    display: none;
+  }
+
+  #message {
+    margin-top: 1rem;
+    color: red;
+    font-weight: 600;
+  }
+</style>
+
+</head>
+<body>
+
+<header>
+  <h1>Terabox Video Player</h1>
+  <p>Paste your Terabox video link below to stream or download</p>
+</header>
+
+<main>
+  <form id="videoForm">
+    <label for="videoUrl">Terabox Video URL:</label>
+    <input type="url" id="videoUrl" placeholder="Enter Terabox video link" required />
+    <button type="submit">Play Video</button>
+  </form>
+
+  <div id="message"></div>
+
+  <video id="videoPlayer" controls preload="none" width="100%">
+    Your browser does not support the video tag.
+  </video>
+</main>
+
+<script>
+  document.getElementById('videoForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const urlInput = document.getElementById('videoUrl');
+    const videoPlayer = document.getElementById('videoPlayer');
+    const message = document.getElementById('message');
+
+    message.textContent = '';
+    videoPlayer.style.display = 'none';
+    videoPlayer.src = '';
+
+    const url = urlInput.value.trim();
+    if (!url) {
+      message.textContent = 'Please enter a Terabox video URL.';
+      return;
+    }
+
+    // IMPORTANT: Replace 'http://localhost:5000/api/get_video_link' with your backend API URL.
+    try {
+      const response = await fetch('http://localhost:5000/api/get_video_link', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch video link');
+      }
+
+      const data = await response.json();
+      videoPlayer.src = data.video_url;
+      videoPlayer.style.display = 'block';
+      videoPlayer.play();
+
+    } catch (error) {
+      message.textContent = `Error: ${error.message}`;
+    }
+  });
+</script>
+
+</body>
+</html>
